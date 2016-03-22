@@ -1,23 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Saving your Game...</title>
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<?php ob_start();
 
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+// auth
+require_once('auth.php');
 
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-
-</head>
-<body>
-
-<a href="game.php" title="Add a Game">Add a New Game</a>
-<a href="games.php" title="Game Listings">View Games</a>
-
-<?php
 // store the form inputs in variables
 $name = $_POST['name'];
 $age_limit = $_POST['age_limit'];
@@ -51,6 +36,27 @@ if (empty($size) || !is_numeric($size)) {
     $ok = false;
 }
 
+// check for photo, validate, and save it if we have one
+if (!empty($_FILES['cover_image']['name'])) {
+    $cover_image = $_FILES['cover_image']['name'];
+    $type = $_FILES['cover_image']['type'];
+    $tmp_name = $_FILES['cover_image']['tmp_name'];
+
+    // validate file type
+    if ($type != 'image/jpeg') {
+        echo 'Invalid JPG<br />';
+        $ok = false;
+    }
+    else {
+
+        if ($ok) {
+            // save the image if no validation errors found
+            $final_image = session_id() . "-" . $cover_image;
+            move_uploaded_file($tmp_name, "images/$final_image");
+        }
+    }
+}
+
 // save ONLY IF the form is complete
 if ($ok) {
 
@@ -60,12 +66,12 @@ if ($ok) {
     // if we have an existing game_id, run an update
     if (!empty($game_id)) {
         $sql = "UPDATE games SET name = :name, age_limit = :age_limit,
-          release_date = :release_date, size = :size WHERE game_id = :game_id";
+          release_date = :release_date, size = :size, cover_image = :cover_image WHERE game_id = :game_id";
     }
     else {
         // set up an SQL command to save the new game
-        $sql = "INSERT INTO games (name, age_limit, release_date, size)
-          VALUES (:name, :age_limit, :release_date, :size)";
+        $sql = "INSERT INTO games (name, age_limit, release_date, size, cover_image)
+          VALUES (:name, :age_limit, :release_date, :size, :cover_image)";
     }
 
     // set up a command object
@@ -76,6 +82,7 @@ if ($ok) {
     $cmd->bindParam(':age_limit', $age_limit, PDO::PARAM_INT);
     $cmd->bindParam(':release_date', $release_date, PDO::PARAM_INT);
     $cmd->bindParam(':size', $size, PDO::PARAM_INT);
+    $cmd->bindParam(':cover_image', $final_image, PDO::PARAM_STR, 255);
 
     // add the game_id param if updating
     if (!empty($game_id)) {
@@ -86,14 +93,15 @@ if ($ok) {
     $cmd->execute();
 
     // show message
-    echo "Game Saved";
+    //echo "Game Saved";
 
     // disconnecting
     $conn = null;
+    header('location:games.php');
 
     // send confirmation email
 
 }
-?>
-</body>
-</html>
+
+require_once('footer.php');
+ob_flush(); ?>

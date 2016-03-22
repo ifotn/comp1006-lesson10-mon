@@ -29,6 +29,7 @@
         ?>
             <li><a href="game.php" title="Add a Game">Add Game</a></li>
             <li><a href="games.php" title="View Games">View Games</a></li>
+            <li><a href="gallery.php" title="Gallery">Cover Gallery</a></li>
             <li><a href="logout.php" title="Logout">Logout</a></li>
         <?php }
         else { ?>

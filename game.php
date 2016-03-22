@@ -12,6 +12,7 @@ $name = null;
 $age_limit = null;
 $release_date = null;
 $size = null;
+$cover_image = null;
 
 //check if we have a numeric game ID in the querystring
 if ((!empty($_GET['game_id'])) && (is_numeric($_GET['game_id']))) {
@@ -35,6 +36,7 @@ if ((!empty($_GET['game_id'])) && (is_numeric($_GET['game_id']))) {
         $age_limit = $game['age_limit'];
         $release_date = $game['release_date'];
         $size = $game['size'];
+        $cover_image = $game['cover_image'];
     }
 
     //disconnect
@@ -44,7 +46,7 @@ if ((!empty($_GET['game_id'])) && (is_numeric($_GET['game_id']))) {
 
 <h1>Game Details</h1>
 
-<form action="save-game.php" method="post">
+<form action="save-game.php" method="post" enctype="multipart/form-data">
     <fieldset>
         <label for="name" class="col-sm-2">Name:</label>
         <input name="name" id="name" placeholder="Enter Game Here" required
@@ -67,6 +69,15 @@ if ((!empty($_GET['game_id'])) && (is_numeric($_GET['game_id']))) {
         <input name="size" id="size" placeholder="GB Here" required
                value="<?php echo $size; ?>" />
     </fieldset>
+    <fieldset>
+        <label for="cover_image" class="col-sm-2">Cover Image:</label>
+        <input type="file" id="cover_image" name="cover_image" />
+    </fieldset>
+
+    <?php if (!empty($cover_image)) {
+        echo '<img src="images/' . $cover_image . '" title="Cover Image" class="col-sm-offset-2 thumbnail" />';
+    } ?>
+
     <input name="game_id" id="game_id"
         type="hidden" value="<?php echo $game_id; ?>" />
     <button class="btn btn-primary col-sm-offset-2">Save</button>

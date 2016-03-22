@@ -1,6 +1,8 @@
 <?php
 $page_title = null;
 $page_title = 'COMP1006 Web Application | Page Not Found';
+
+session_start();
 require_once('header.php');
 ?>
 
