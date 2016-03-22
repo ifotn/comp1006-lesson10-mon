@@ -24,5 +24,5 @@ foreach ($games as $game) {
 // disconnect
 $conn = null;
 
-require_once ('footer.php');
+require_once('footer.php');
 ob_flush(); ?>
